@@ -12,8 +12,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.VictorSPXMotorSubsystem;
-
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 
 public class Robot extends TimedRobot {
@@ -43,6 +44,7 @@ public class Robot extends TimedRobot {
     Servo servoCameraTurn = new Servo(9);
     Servo servoCameraPitch = new Servo( 8);
     
+    PneumaticSubsystem lifter = new PneumaticSubsystem(2, 3, true);
 
 
     @Override
@@ -185,7 +187,10 @@ public class Robot extends TimedRobot {
         //end of camera code
 
 
-
+        //pneumatic liter --note we are using getButtonPRESSED, which is only true the moment the button is first pressed.
+        if(xbox1.getRightStickButtonPressed()){
+            lifter.TogglePneumatic();
+        }
 
 
     }
