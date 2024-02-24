@@ -1,0 +1,41 @@
+package frc.robot.commands;
+
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.MotorSubsystem;
+
+public class CmdSetMotorFallRate extends CommandBase{
+    private MotorSubsystem motor;
+    private double rate;
+    
+
+    public CmdSetMotorFallRate( MotorSubsystem motorSubsystem, double rate){
+        
+        this.motor = motorSubsystem;
+        this.rate = sperateed;
+        addRequirements(motorSubsystem);
+        
+    }
+
+    @Override
+    public void initialize(){
+    }
+
+    @Override 
+    public void execute(){
+        motor.SetSpeedFallRate(rate);
+    }
+
+    @Override
+    public boolean isFinished(){
+        
+        
+    }
+
+    @Override
+    public void end(boolean interrupted){
+        
+    }
+
+ 
+
+}

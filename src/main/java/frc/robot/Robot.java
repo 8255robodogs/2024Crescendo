@@ -5,18 +5,28 @@ import javax.lang.model.util.ElementScanner14;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.PixelFormat;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.ControllerConstants;
+import frc.robot.commands.auto.programs.ExampleAuto;
+import frc.robot.commands.auto.programs.TestAuto;
+import frc.robot.commands.drivetrain.ArcadeDriveCmd;
+import frc.robot.subsystems.ExampleSys;
 import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.SwerveSys;
 import frc.robot.subsystems.VictorSPXMotorSubsystem;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.drivetrain.ArcadeDriveCmd;
 
 
 public class Robot extends TimedRobot {
@@ -26,7 +36,15 @@ public class Robot extends TimedRobot {
     private XboxController xbox1 = new XboxController(1);
     
     private Command autonomousCommand;
+    SendableChooser<Command> autoSelector = new SendableChooser<Command>();
     
+
+
+    //drivesystem
+    private final SwerveSys swerveSys = new SwerveSys();
+    private final ExampleSys exampleSys = new ExampleSys();
+
+
     //This is the top motor, running on its own
     private VictorSPXMotorSubsystem topMotor = new VictorSPXMotorSubsystem(9, "TopMotor", true);
     
@@ -52,16 +70,30 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-
+        robotContainer = new RobotContainer(); //not using robotcontainer
         
-
-        robotContainer = new RobotContainer();
-        UsbCamera camera = CameraServer.startAutomaticCapture();
-        camera.setVideoMode(PixelFormat.kMJPEG, 320, 240, 15);
+        //create command selector for the smart dashboard and add Autos to it.
+        SmartDashboard.putData("auto selector", autoSelector);
+        autoSelector.setDefaultOption("Do Nothing", null);
+        autoSelector.addOption("Example Auto", new TestAuto(swerveSys, launcherMotorA,launcherMotorB));
+            
+        //create the camera
+        //UsbCamera camera = CameraServer.startAutomaticCapture();
+        //camera.setVideoMode(PixelFormat.kMJPEG, 320, 240, 15);
         
+        //create the swerve drive
+        swerveSys.setSpeedFactor(.9);
+        swerveSys.setDefaultCommand(new ArcadeDriveCmd(
+            () -> MathUtil.applyDeadband(xbox0.getLeftY(), ControllerConstants.joystickDeadband),
+            () -> MathUtil.applyDeadband(xbox0.getLeftX(), ControllerConstants.joystickDeadband),
+            () -> MathUtil.applyDeadband(xbox0.getRightX(), ControllerConstants.joystickDeadband),
+            true,
+            true,
+            swerveSys
+        ));
+
         //set motor speeds
         topMotor.setMaxSpeed(1.0);
-        
 
         launcherMotorA.setMaxSpeed(1.0);
         launcherMotorB.setMaxSpeed(1.0);
@@ -75,33 +107,18 @@ public class Robot extends TimedRobot {
         servoCameraTurn.setPulseTimeMicroseconds(2500);
         servoCameraPitch.setPulseTimeMicroseconds(2500);
         
-        
-
-
-        System.out.println("Servo PMS: " + servoCameraPitch.getPulseTimeMicroseconds());
-
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-        robotContainer.updateInterface();
-        
-        SmartDashboard.putBoolean("A Pressed",xbox0.getAButton());
-        SmartDashboard.putBoolean("B Pressed",xbox0.getBButton());
-        SmartDashboard.putBoolean("X Pressed",xbox0.getXButton());
-        SmartDashboard.putBoolean("Y Pressed",xbox0.getYButton());
-
-        SmartDashboard.putBoolean("Right Stick Clicked",xbox0.getRightStickButton());
-        
-        
-
+             
     }
 
     @Override
     public void autonomousInit() {
-        autonomousCommand = robotContainer.getAutonomousCommand();
-
+        //autonomousCommand = autoSelector.getSelected();
+        autonomousCommand = new TestAuto(swerveSys, launcherMotorA,launcherMotorB);
         if(autonomousCommand != null) autonomousCommand.schedule();
     }
 
@@ -114,16 +131,18 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic(){
         
-        //DRIVER CONTROLLER (xbox0)
-        //(mostly handled in RobotContainer)
-
-
+        //DRIVER CONTROLLER (xbox0) is handled through the command system
 
         //Operator Controller (xbox1)
 
-        //Ground pickup
-        if(xbox1.getAButton()){
-            
+        //reset heading
+        if(xbox1.getStartButtonPressed()){
+            swerveSys.resetHeading();
+        }
+
+        //brakes
+        if(xbox1.getLeftTriggerAxis() >0.3){
+            swerveSys.lock();
         }
 
 
@@ -157,12 +176,6 @@ public class Robot extends TimedRobot {
         }
 
 
-
-
-
-
-
-
         //topmotor
         if(xbox1.getRightBumper()){
              topMotor.SetSpeed(0.6);
@@ -173,7 +186,7 @@ public class Robot extends TimedRobot {
         }
 
 
-        //camera rotation setup
+        //camera rotation setup (this all needs to be made a subsystem some day)
         double cameraX = xbox1.getLeftX() *-1;
         double cameraY =  xbox1.getLeftY();
         if(Math.abs(cameraX) < .1){
@@ -200,5 +213,8 @@ public class Robot extends TimedRobot {
 
 
     }
+
+
+    
 
 }

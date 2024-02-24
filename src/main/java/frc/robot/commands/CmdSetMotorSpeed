@@ -1,0 +1,41 @@
+package frc.robot.commands;
+
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.MotorSubsystem;
+
+public class CmdSetMotorSpeed extends CommandBase{
+    private MotorSubsystem motor;
+    private double speed;
+    
+
+    public CmdSetMotorSpeed( MotorSubsystem motorSubsystem, double speed){
+        
+        this.motor = motorSubsystem;
+        this.speed = speed;
+        addRequirements(motorSubsystem);
+        
+    }
+
+    @Override
+    public void initialize(){
+    }
+
+    @Override 
+    public void execute(){
+        motor.SetSpeed(speed);
+    }
+
+    @Override
+    public boolean isFinished(){
+        
+        
+    }
+
+    @Override
+    public void end(boolean interrupted){
+        
+    }
+
+ 
+
+}
