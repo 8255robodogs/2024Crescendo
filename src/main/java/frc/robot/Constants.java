@@ -11,7 +11,6 @@ import edu.wpi.first.math.util.Units;
 public class Constants {
 
     public static final class CANDevices {
-        // FIXME: Set these CAN ID values to the those of your robot, or change your CAN ID's to match this convention.
         public static final int powerDistributionHubId = 0;
 
         public static final int imuId = 60;
@@ -38,7 +37,7 @@ public class Constants {
     public static final class ControllerConstants {
         public static final int driverGamepadPort = 0;
 
-        public static final double joystickDeadband = 0.15;
+        public static final double joystickDeadband = 0.1;
 
         public static final double triggerPressedThreshhold = 0.25;
     }
@@ -48,7 +47,7 @@ public class Constants {
          * The track width from wheel center to wheel center.
          */
         // FIXME: Make sure to measure from the center of each wheel
-        public static final double trackWidth = Units.inchesToMeters(24.5);
+        public static final double trackWidth = Units.inchesToMeters(24);
 
         /**
          * The track length from wheel center to wheel center.
@@ -110,9 +109,9 @@ public class Constants {
         // the drive base drives 180 off from the commanded direction, flip these readings 180 degrees and change
         // the comment above for future reference.
         public static final Rotation2d frontLeftModOffset = Rotation2d.fromDegrees((0.540283*360) + 180 + 30); 
-        public static final Rotation2d frontRightModOffset = Rotation2d.fromDegrees((0.391602*360) + 180.0 - 30);
+        public static final Rotation2d frontRightModOffset = Rotation2d.fromDegrees((0.391602*360) + 180.0 - 80);
         public static final Rotation2d backRightModOffset = Rotation2d.fromDegrees((0.390869*360) ); 
-        public static final Rotation2d backLeftModOffset = Rotation2d.fromDegrees((0.834473*360) + 180 - 10);
+        public static final Rotation2d backLeftModOffset = Rotation2d.fromDegrees((0.834473*360) + 180 - 12);
 
         // FIXME: You may want to change this value.
         public static final int driveCurrentLimitAmps = 35;

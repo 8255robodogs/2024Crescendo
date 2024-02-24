@@ -21,30 +21,29 @@ public class RobotContainer {
 
     private final ExampleSys exampleSys = new ExampleSys();
 
-    //private final VictorSPXMotorSubsystem motorA = new VictorSPXMotorSubsystem(0, "motorA", false);
-
     // Initialize joysticks.
     private final CommandXboxController driverController = new CommandXboxController(ControllerConstants.driverGamepadPort);
     
-
     // Initialize auto selector.
     SendableChooser<Command> autoSelector = new SendableChooser<Command>();
 
     public RobotContainer() {
         SmartDashboard.putData("auto selector", autoSelector);
-
+        
         // Add programs to auto selector.
         autoSelector.setDefaultOption("Do Nothing", null);
         autoSelector.addOption("Example Auto", new ExampleAuto(swerveSys, exampleSys));
-
+        
+        
         configDriverBindings();
     }
 
     public void configDriverBindings() {
+        swerveSys.setSpeedFactor(.9);
         swerveSys.setDefaultCommand(new ArcadeDriveCmd(
-            () -> MathUtil.applyDeadband(driverController.getLeftY()*.5, ControllerConstants.joystickDeadband),
-            () -> MathUtil.applyDeadband(driverController.getLeftX()*.5, ControllerConstants.joystickDeadband),
-            () -> MathUtil.applyDeadband(driverController.getRightX()*.5, ControllerConstants.joystickDeadband),
+            () -> MathUtil.applyDeadband(driverController.getLeftY(), ControllerConstants.joystickDeadband),
+            () -> MathUtil.applyDeadband(driverController.getLeftX(), ControllerConstants.joystickDeadband),
+            () -> MathUtil.applyDeadband(driverController.getRightX(), ControllerConstants.joystickDeadband),
             true,
             true,
             swerveSys
@@ -59,11 +58,6 @@ public class RobotContainer {
 
         driverController.axisGreaterThan(XboxController.Axis.kLeftTrigger.value, ControllerConstants.triggerPressedThreshhold)
             .whileTrue(Commands.runOnce(() -> swerveSys.lock()));
-
-
-        //driverController.a().onTrue(Commands.runOnce(() -> motorA.SetSpeed(0.8)));
-        //driverController.a().onFalse(Commands.runOnce(() -> motorA.SetSpeed(0)));
-
         
     }
 
