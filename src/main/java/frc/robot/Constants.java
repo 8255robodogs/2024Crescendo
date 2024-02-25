@@ -108,8 +108,8 @@ public class Constants {
         // FIXME: Don't quote me on that they should be pointing to the left. (I'm almost positive though.) If 
         // the drive base drives 180 off from the commanded direction, flip these readings 180 degrees and change
         // the comment above for future reference.
-        public static final Rotation2d frontLeftModOffset = Rotation2d.fromDegrees((0.540283*360) + 180 + 30); 
-        public static final Rotation2d frontRightModOffset = Rotation2d.fromDegrees((0.391602*360) + 180.0 - 80);
+        public static final Rotation2d frontLeftModOffset = Rotation2d.fromDegrees((0.540283*360) + 25 +180); 
+        public static final Rotation2d frontRightModOffset = Rotation2d.fromDegrees((0.391602*360) + 100.0);
         public static final Rotation2d backRightModOffset = Rotation2d.fromDegrees((0.390869*360) ); 
         public static final Rotation2d backLeftModOffset = Rotation2d.fromDegrees((0.834473*360) + 180 - 12);
 

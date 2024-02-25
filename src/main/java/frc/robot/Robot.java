@@ -118,7 +118,8 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         //autonomousCommand = autoSelector.getSelected();
-        autonomousCommand = new TestAuto(swerveSys, launcherMotorA,launcherMotorB);
+        //autonomousCommand = new TestAuto(swerveSys, launcherMotorA,launcherMotorB);
+        autonomousCommand = new ExampleAuto(swerveSys, new ExampleSys());
         if(autonomousCommand != null) autonomousCommand.schedule();
     }
 
@@ -131,19 +132,23 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic(){
         
-        //DRIVER CONTROLLER (xbox0) is handled through the command system
-
-        //Operator Controller (xbox1)
-
+        //DRIVER CONTROLLER (xbox0) driving is handled through the command system
+        
         //reset heading
-        if(xbox1.getStartButtonPressed()){
+        if(xbox0.getStartButtonPressed()){
             swerveSys.resetHeading();
         }
 
         //brakes
-        if(xbox1.getLeftTriggerAxis() >0.3){
+        if(xbox0.getLeftTriggerAxis() >0.3){
             swerveSys.lock();
         }
+
+
+
+        //Operator Controller (xbox1)
+
+        
 
 
         //Launcher Feeder
