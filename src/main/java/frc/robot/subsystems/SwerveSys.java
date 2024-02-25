@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.DriveConstants;
 
@@ -427,5 +428,32 @@ public class SwerveSys extends SubsystemBase {
         frontRightMod.setDriveCurrentLimit(amps);
         backRightMod.setDriveCurrentLimit(amps);
         backLeftMod.setDriveCurrentLimit(amps);
+    }
+
+    public void updateInterface() {
+        SmartDashboard.putNumber("heading degrees", getHeading().getDegrees());
+        SmartDashboard.putNumber("speed m/s", getAverageDriveVelocityMetersPerSec());
+
+        SmartDashboard.putNumber("FL angle degrees", getModuleStates()[0].angle.getDegrees());
+        SmartDashboard.putNumber("FR angle degrees", getModuleStates()[1].angle.getDegrees());
+        SmartDashboard.putNumber("BL angle degrees", getModuleStates()[2].angle.getDegrees());
+        SmartDashboard.putNumber("BR angle degrees", getModuleStates()[3].angle.getDegrees());
+
+        //SmartDashboard.putNumber("FL raw CANCoder degrees", swerveSys.getCanCoderAngles()[0].getDegrees());
+        //SmartDashboard.putNumber("FR raw CANCoder degrees", swerveSys.getCanCoderAngles()[1].getDegrees());
+        //SmartDashboard.putNumber("BL raw CANCoder degrees", swerveSys.getCanCoderAngles()[2].getDegrees());
+        //SmartDashboard.putNumber("BR raw CANCoder degrees", swerveSys.getCanCoderAngles()[3].getDegrees());
+
+        //SmartDashboard.putNumber("FL offset CANCoder degrees", swerveSys.getCanCoderAngles()[0].getDegrees() - DriveConstants.frontLeftModOffset.getDegrees());
+        //SmartDashboard.putNumber("FR offset CANCoder degrees", swerveSys.getCanCoderAngles()[1].getDegrees() - DriveConstants.frontRightModOffset.getDegrees());
+        //SmartDashboard.putNumber("BL offset CANCoder degrees", swerveSys.getCanCoderAngles()[2].getDegrees() - DriveConstants.backLeftModOffset.getDegrees());
+        //SmartDashboard.putNumber("BR offset CANCoder degrees", swerveSys.getCanCoderAngles()[3].getDegrees() - DriveConstants.backRightModOffset.getDegrees());
+
+        SmartDashboard.putNumber("locX", getPose().getX());
+        SmartDashboard.putNumber("locY", getPose().getY());
+        
+        
+
+
     }
 }

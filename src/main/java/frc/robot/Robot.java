@@ -16,10 +16,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.auto.programs.ExampleAuto;
+import frc.robot.commands.auto.programs.ExampleAuto2;
 import frc.robot.commands.auto.programs.TestAuto;
 import frc.robot.commands.drivetrain.ArcadeDriveCmd;
 import frc.robot.subsystems.ExampleSys;
-import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.SwerveSys;
 import frc.robot.subsystems.VictorSPXMotorSubsystem;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -64,7 +64,6 @@ public class Robot extends TimedRobot {
     Servo servoCameraTurn = new Servo(9);
     Servo servoCameraPitch = new Servo( 8);
     
-    PneumaticSubsystem lifter = new PneumaticSubsystem(2, 3, true);
 
     
 
@@ -75,8 +74,10 @@ public class Robot extends TimedRobot {
         //create command selector for the smart dashboard and add Autos to it.
         SmartDashboard.putData("auto selector", autoSelector);
         autoSelector.setDefaultOption("Do Nothing", null);
+        autoSelector.addOption("Example Auto 2", new ExampleAuto2(swerveSys, exampleSys));
         autoSelector.addOption("Example Auto", new TestAuto(swerveSys, launcherMotorA,launcherMotorB));
-            
+        autoSelector.addOption("Test Auto", new TestAuto(swerveSys, launcherMotorA, launcherMotorB));    
+
         //create the camera
         //UsbCamera camera = CameraServer.startAutomaticCapture();
         //camera.setVideoMode(PixelFormat.kMJPEG, 320, 240, 15);
@@ -112,15 +113,21 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-             
+        
     }
 
     @Override
     public void autonomousInit() {
+        swerveSys.resetPose();
         //autonomousCommand = autoSelector.getSelected();
         //autonomousCommand = new TestAuto(swerveSys, launcherMotorA,launcherMotorB);
-        autonomousCommand = new ExampleAuto(swerveSys, new ExampleSys());
+        autonomousCommand = new ExampleAuto2(swerveSys, new ExampleSys());
         if(autonomousCommand != null) autonomousCommand.schedule();
+    }
+
+    @Override
+    public void autonomousPeriodic(){
+        swerveSys.updateInterface();
     }
 
     @Override
@@ -131,7 +138,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic(){
-        
+        swerveSys.updateInterface();
         //DRIVER CONTROLLER (xbox0) driving is handled through the command system
         
         //reset heading
@@ -142,6 +149,12 @@ public class Robot extends TimedRobot {
         //brakes
         if(xbox0.getLeftTriggerAxis() >0.3){
             swerveSys.lock();
+        }
+
+        if(xbox0.getAButtonPressed()){
+            swerveSys.resetPose();
+            swerveSys.resetHeading();
+            swerveSys.resetDriveDistances();
         }
 
 
@@ -211,10 +224,7 @@ public class Robot extends TimedRobot {
         //end of camera code
 
 
-        //pneumatic liter --note we are using getButtonPRESSED, which is only true the moment the button is first pressed.
-        if(xbox1.getRightStickButtonPressed()){
-            lifter.TogglePneumatic();
-        }
+        
 
 
     }
