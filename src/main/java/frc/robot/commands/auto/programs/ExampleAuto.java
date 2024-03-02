@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.ExampleCmd;
-import frc.robot.commands.auto.FollowTrajectoryCmd;
+import frc.robot.commands.drivetrain.FollowTrajectoryCmd;
 import frc.robot.subsystems.ExampleSys;
 import frc.robot.subsystems.SwerveSys;
 

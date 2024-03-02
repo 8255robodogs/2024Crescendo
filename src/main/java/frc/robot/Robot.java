@@ -1,6 +1,9 @@
 package frc.robot;
 
 
+import java.text.DecimalFormat;
+import java.util.Date;
+
 import javax.lang.model.util.ElementScanner14;
 
 import edu.wpi.first.cameraserver.CameraServer;
@@ -59,13 +62,14 @@ public class Robot extends TimedRobot {
     //Launch feeder
     VictorSPXMotorSubsystem LauncherFeeder = new VictorSPXMotorSubsystem(2,"LauncherFeeder",false);
 
+    VictorSPXMotorSubsystem lifterGate = new VictorSPXMotorSubsystem(7, "lifter gate", true);
 
     //The two little servos for the camera gimbal. They are plugged into the PMW ports on the RIO.
     Servo servoCameraTurn = new Servo(9);
     Servo servoCameraPitch = new Servo( 8);
     
-
-    
+    int outputLimiter;
+    DecimalFormat df = new DecimalFormat("###.###");
 
     @Override
     public void robotInit() {
@@ -75,8 +79,8 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("auto selector", autoSelector);
         autoSelector.setDefaultOption("Do Nothing", null);
         autoSelector.addOption("Example Auto 2", new ExampleAuto2(swerveSys, exampleSys));
-        autoSelector.addOption("Example Auto", new TestAuto(swerveSys, launcherMotorA,launcherMotorB));
-        autoSelector.addOption("Test Auto", new TestAuto(swerveSys, launcherMotorA, launcherMotorB));    
+        //autoSelector.addOption("Example Auto", new TestAuto(swerveSys, launcherMotorA,launcherMotorB));
+        //autoSelector.addOption("Test Auto", new TestAuto(swerveSys, launcherMotorA, launcherMotorB));    
 
         //create the camera
         //UsbCamera camera = CameraServer.startAutomaticCapture();
@@ -113,6 +117,13 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+
+        
+        outputLimiter++;
+        if(outputLimiter > 120){
+            outputLimiter=0;
+            System.out.println("X: " + df.format(swerveSys.getPose().getX()) + "   Y: " + df.format(swerveSys.getPose().getY()));
+        }
         
     }
 
@@ -121,7 +132,9 @@ public class Robot extends TimedRobot {
         swerveSys.resetPose();
         //autonomousCommand = autoSelector.getSelected();
         //autonomousCommand = new TestAuto(swerveSys, launcherMotorA,launcherMotorB);
-        autonomousCommand = new ExampleAuto2(swerveSys, new ExampleSys());
+        //autonomousCommand = new ExampleAuto2(swerveSys, new ExampleSys());
+        autonomousCommand = new TestAuto(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
+
         if(autonomousCommand != null) autonomousCommand.schedule();
     }
 
@@ -160,9 +173,6 @@ public class Robot extends TimedRobot {
 
 
         //Operator Controller (xbox1)
-
-        
-
 
         //Launcher Feeder
         if(xbox1.getBButton() == true && xbox1.getXButton() == false){
@@ -223,8 +233,10 @@ public class Robot extends TimedRobot {
         servoCameraPitch.setAngle(cameraY);
         //end of camera code
 
-
-        
+        //lifter gate
+        if(Math.abs(xbox1.getLeftY()) > 0.2){
+            lifterGate.ControlDirectly(xbox1.getLeftY() * 0.5);
+        }        
 
 
     }

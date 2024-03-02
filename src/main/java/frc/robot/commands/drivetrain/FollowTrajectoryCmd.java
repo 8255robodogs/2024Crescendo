@@ -1,4 +1,4 @@
-package frc.robot.commands.auto;
+package frc.robot.commands.drivetrain;
 
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.path.PathPlannerPath;
