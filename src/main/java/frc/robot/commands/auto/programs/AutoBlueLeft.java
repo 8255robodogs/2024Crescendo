@@ -10,6 +10,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.motorcontrol.Victor;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -26,9 +28,9 @@ import frc.robot.commands.drivetrain.SetTranslationCmd;
 import frc.robot.subsystems.SwerveSys;
 import frc.robot.subsystems.VictorSPXMotorSubsystem;
 
-public class TestAuto extends SequentialCommandGroup{
+public class AutoBlueLeft extends SequentialCommandGroup{
 
-    public TestAuto(SwerveSys swerveSys, VictorSPXMotorSubsystem launcherMotorA, VictorSPXMotorSubsystem launcherMotorB, VictorSPXMotorSubsystem liftGate, 
+    public AutoBlueLeft(SwerveSys swerveSys, VictorSPXMotorSubsystem launcherMotorA, VictorSPXMotorSubsystem launcherMotorB, VictorSPXMotorSubsystem liftGate, 
     VictorSPXMotorSubsystem groundPickupMotor, VictorSPXMotorSubsystem launcherFeeder){
         //PathPlannerPath path = PathPlannerPath.fromPathFile("Short Path Forward");
 
@@ -39,11 +41,13 @@ public class TestAuto extends SequentialCommandGroup{
             new WaitCommand(0.1),
             new CmdSpinMotorPositive(1.8, launcherFeeder),
             new CmdSetMotorSpeed(launcherMotorA,0),
-            new CmdSetMotorSpeed(launcherMotorB, 0)
-            //AutoBuilder.followPath(path)
-            //AutoBuilder.pathfindToPose(new Pose2d(-2,0, new Rotation2d(0)),new PathConstraints(0.7,1,90,90))
-            
-            );
+            new CmdSetMotorSpeed(launcherMotorB, 0),
+
+            new SetPoseCmd(new Pose2d(
+                new Translation2d(0.69,4.39), new Rotation2d().fromDegrees(117)
+            ), swerveSys)
+            //AutoBuilder.pathfindToPose(new Pose2d(2.9,7, new Rotation2d(0)),new PathConstraints(1,1,90,90))
+        );
             
     }
 

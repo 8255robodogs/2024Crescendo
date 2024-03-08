@@ -43,16 +43,8 @@ public class Constants {
     }
     
     public static final class DriveConstants {
-        /**
-         * The track width from wheel center to wheel center.
-         */
-        // FIXME: Make sure to measure from the center of each wheel
+        
         public static final double trackWidth = Units.inchesToMeters(24);
-
-        /**
-         * The track length from wheel center to wheel center.
-         */
-        // FIXME: mature sure to measure from the center of each wheel
         public static final double wheelBase = Units.inchesToMeters(24);
 
         /**
@@ -99,24 +91,14 @@ public class Constants {
          */
         public static final double maxTurnRateRadiansPerSec = 2.0 * Math.PI;
 
-        // FIXME: Set line up the swerve modules and set these values.
+        
+        public static final Rotation2d frontLeftModOffset = Rotation2d.fromDegrees((0.540283*360) -35 +180); 
+        public static final Rotation2d frontRightModOffset = Rotation2d.fromDegrees((0.391602*360) + 35.0);
+        public static final Rotation2d backRightModOffset = Rotation2d.fromDegrees((0.390869*360) +180 -112); 
+        public static final Rotation2d backLeftModOffset = Rotation2d.fromDegrees((0.834473*360) + 165);
 
-        // The bolt heads should be pointing to the left. These values are subtracted from the CANCoder reading,
-        // so they should be the raw CANCoder value when set straight. These values should be between 0 and 360
-        // degrees.
-
-        // FIXME: Don't quote me on that they should be pointing to the left. (I'm almost positive though.) If 
-        // the drive base drives 180 off from the commanded direction, flip these readings 180 degrees and change
-        // the comment above for future reference.
-        public static final Rotation2d frontLeftModOffset = Rotation2d.fromDegrees((0.540283*360) + 25 +180); 
-        public static final Rotation2d frontRightModOffset = Rotation2d.fromDegrees((0.391602*360) + 100.0);
-        public static final Rotation2d backRightModOffset = Rotation2d.fromDegrees((0.390869*360) ); 
-        public static final Rotation2d backLeftModOffset = Rotation2d.fromDegrees((0.834473*360) + 180 -15);
-
-        // FIXME: You may want to change this value.
         public static final int driveCurrentLimitAmps = 35;
         
-        // FIXME: These values should be fine, but if the modules start to rattle you may want to play with the steer PID values.
         public static final double drivekP = 0.005;
         public static final double drivekD = 0.0;
 
@@ -136,14 +118,13 @@ public class Constants {
          */
         public static final double maxVelMetersPerSec = 3.25;
 
-        // FIXME: These drive and rotation PID constants most likely need to be tuned for better accuracy.
-        public static final double drivekP = 12.8;
-        public static final double drivekD = 0.085;
+        public static final double drivekP = 1;
+        public static final double drivekD = 0;
 
         public static final PIDConstants driveConstants = new PIDConstants(drivekD, drivekD);
 
-        public static final double rotkP = 1.27;
-        public static final double rotkD = 0.5;
+        public static final double rotkP = 1;
+        public static final double rotkD = 0;
 
         public static final PIDConstants rotConstants = new PIDConstants(rotkP, rotkD);
     }

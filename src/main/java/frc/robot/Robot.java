@@ -10,6 +10,13 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.PixelFormat;
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
@@ -18,9 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.commands.auto.programs.ExampleAuto;
-import frc.robot.commands.auto.programs.ExampleAuto2;
-import frc.robot.commands.auto.programs.TestAuto;
+import frc.robot.commands.auto.programs.*;
 import frc.robot.commands.drivetrain.ArcadeDriveCmd;
 import frc.robot.subsystems.ExampleSys;
 import frc.robot.subsystems.SwerveSys;
@@ -68,13 +73,30 @@ public class Robot extends TimedRobot {
     Servo servoCameraTurn = new Servo(9);
     Servo servoCameraPitch = new Servo( 8);
     
-    int outputLimiter;
     DecimalFormat df = new DecimalFormat("###.###");
+
+    DoubleLogEntry xlog;
+    DoubleLogEntry ylog;
+    DoubleLogEntry headingLog;
+    DoubleArrayLogEntry poseLog;
+
 
     @Override
     public void robotInit() {
         robotContainer = new RobotContainer(); //not using robotcontainer
         
+        // Starts recording to data log
+        DataLogManager.start();
+        // Record both DS control and joystick data
+        DriverStation.startDataLog(DataLogManager.getLog());
+        DataLog log = DataLogManager.getLog();
+        
+        
+        xlog = new DoubleLogEntry(log, "/odometry/X");
+        ylog = new DoubleLogEntry(log, "/odometry/Y");
+        headingLog = new DoubleLogEntry(log, "/odometry/Heading");
+        poseLog = new DoubleArrayLogEntry(log,"odometry/pose");
+
         //create command selector for the smart dashboard and add Autos to it.
         SmartDashboard.putData("auto selector", autoSelector);
         autoSelector.setDefaultOption("Do Nothing", null);
@@ -86,6 +108,8 @@ public class Robot extends TimedRobot {
         //UsbCamera camera = CameraServer.startAutomaticCapture();
         //camera.setVideoMode(PixelFormat.kMJPEG, 320, 240, 15);
         
+
+
         //create the swerve drive
         swerveSys.setSpeedFactor(.9);
         swerveSys.setDefaultCommand(new ArcadeDriveCmd(
@@ -112,46 +136,58 @@ public class Robot extends TimedRobot {
         servoCameraTurn.setPulseTimeMicroseconds(2500);
         servoCameraPitch.setPulseTimeMicroseconds(2500);
         
+        
+
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-
-        
+        /*        
         outputLimiter++;
         if(outputLimiter > 120){
             outputLimiter=0;
-            System.out.println("X: " + df.format(swerveSys.getPose().getX()) + "   Y: " + df.format(swerveSys.getPose().getY()));
+            System.out.println("X: " + df.format(swerveSys.getPose().getX()) 
+            + "   Y: " + df.format(swerveSys.getPose().getY()) 
+            + "   Heading: " + swerveSys.getPose().getRotation().getDegrees());
         }
-        
+        */
+        xlog.append(swerveSys.getPose().getX());
+        ylog.append(swerveSys.getPose().getY());
+        headingLog.append(swerveSys.getPose().getRotation().getDegrees());
+        poseLog.append(new double[]{swerveSys.getPose().getX(), swerveSys.getPose().getY(),swerveSys.getPose().getRotation().getDegrees()});
+        swerveSys.updateInterface();
     }
 
     @Override
     public void autonomousInit() {
         swerveSys.resetPose();
-        //autonomousCommand = autoSelector.getSelected();
-        //autonomousCommand = new TestAuto(swerveSys, launcherMotorA,launcherMotorB);
-        //autonomousCommand = new ExampleAuto2(swerveSys, new ExampleSys());
         autonomousCommand = new TestAuto(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
-
-        if(autonomousCommand != null) autonomousCommand.schedule();
+        //autonomousCommand = new AutoBlueLeft(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
+        //autonomousCommand = new AutoBlueMiddle(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
+        //autonomousCommand = new AutoBlueRight(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
+        //autonomousCommand = new AutoRedLeft(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
+        //autonomousCommand = new AutoRedMiddle(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
+        //autonomousCommand = new AutoRedRight(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
+        
+        if(autonomousCommand != null) autonomousCommand.schedule(); //DONT TOUCH
     }
 
     @Override
     public void autonomousPeriodic(){
-        swerveSys.updateInterface();
+
     }
 
     @Override
     public void teleopInit() {
+        
         if(autonomousCommand != null) autonomousCommand.cancel();
         
     }
 
     @Override
     public void teleopPeriodic(){
-        swerveSys.updateInterface();
+        
         //DRIVER CONTROLLER (xbox0) driving is handled through the command system
         
         //reset heading
@@ -163,14 +199,6 @@ public class Robot extends TimedRobot {
         if(xbox0.getLeftTriggerAxis() >0.3){
             swerveSys.lock();
         }
-
-        if(xbox0.getAButtonPressed()){
-            swerveSys.resetPose();
-            swerveSys.resetHeading();
-            swerveSys.resetDriveDistances();
-        }
-
-
 
         //Operator Controller (xbox1)
 
@@ -213,29 +241,9 @@ public class Robot extends TimedRobot {
             topMotor.SetSpeed(0);
         }
 
-
-        //camera rotation setup (this all needs to be made a subsystem some day)
-        double cameraX = xbox1.getLeftX() *-1;
-        double cameraY =  xbox1.getLeftY();
-        if(Math.abs(cameraX) < .1){
-            cameraX = 0;
-        }
-        if(Math.abs(cameraY) < .1){
-            cameraY = 0;
-        }
-        cameraX = cameraX * 45;
-        cameraY = cameraY * 45;
-        cameraX = cameraX+90;
-        cameraY=cameraY+90;
-        cameraX = Math.round(cameraX);
-        cameraY = Math.round(cameraY);
-        servoCameraTurn.setAngle(cameraX);
-        servoCameraPitch.setAngle(cameraY);
-        //end of camera code
-
         //lifter gate
         if(Math.abs(xbox1.getLeftY()) > 0.2){
-            lifterGate.ControlDirectly(xbox1.getLeftY() * 0.5);
+            lifterGate.ControlDirectly(xbox1.getLeftY() * 0.6);
         }        
 
 

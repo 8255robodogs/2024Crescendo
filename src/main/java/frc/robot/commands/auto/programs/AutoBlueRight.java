@@ -26,9 +26,9 @@ import frc.robot.commands.drivetrain.SetTranslationCmd;
 import frc.robot.subsystems.SwerveSys;
 import frc.robot.subsystems.VictorSPXMotorSubsystem;
 
-public class TestAuto extends SequentialCommandGroup{
+public class AutoBlueRight extends SequentialCommandGroup{
 
-    public TestAuto(SwerveSys swerveSys, VictorSPXMotorSubsystem launcherMotorA, VictorSPXMotorSubsystem launcherMotorB, VictorSPXMotorSubsystem liftGate, 
+    public AutoBlueRight(SwerveSys swerveSys, VictorSPXMotorSubsystem launcherMotorA, VictorSPXMotorSubsystem launcherMotorB, VictorSPXMotorSubsystem liftGate, 
     VictorSPXMotorSubsystem groundPickupMotor, VictorSPXMotorSubsystem launcherFeeder){
         //PathPlannerPath path = PathPlannerPath.fromPathFile("Short Path Forward");
 
@@ -39,9 +39,12 @@ public class TestAuto extends SequentialCommandGroup{
             new WaitCommand(0.1),
             new CmdSpinMotorPositive(1.8, launcherFeeder),
             new CmdSetMotorSpeed(launcherMotorA,0),
-            new CmdSetMotorSpeed(launcherMotorB, 0)
-            //AutoBuilder.followPath(path)
-            //AutoBuilder.pathfindToPose(new Pose2d(-2,0, new Rotation2d(0)),new PathConstraints(0.7,1,90,90))
+            new CmdSetMotorSpeed(launcherMotorB, 0),
+
+            new SetPoseCmd(new Pose2d(
+                new Translation2d(0.75,6.75), new Rotation2d().fromDegrees(-122)
+            ), swerveSys)
+            //AutoBuilder.pathfindToPose(new Pose2d(2.9,7, new Rotation2d(0)),new PathConstraints(1,1,90,90))
             
             );
             
