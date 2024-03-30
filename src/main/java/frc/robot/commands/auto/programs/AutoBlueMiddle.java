@@ -30,27 +30,40 @@ public class AutoBlueMiddle extends SequentialCommandGroup{
 
     public AutoBlueMiddle(SwerveSys swerveSys, VictorSPXMotorSubsystem launcherMotorA, VictorSPXMotorSubsystem launcherMotorB, VictorSPXMotorSubsystem liftGate, 
     VictorSPXMotorSubsystem groundPickupMotor, VictorSPXMotorSubsystem launcherFeeder){
-        //PathPlannerPath path = PathPlannerPath.fromPathFile("Short Path Forward");
+        PathPlannerPath path = PathPlannerPath.fromPathFile("Middle Start");
+        PathPlannerPath path2 = PathPlannerPath.fromPathFile("Blue Mid 2");
+        PathPlannerPath path3 = PathPlannerPath.fromPathFile("Blue Mid 3");
 
         addCommands(
-            new CmdSpinMotorNegative(1.5, liftGate)
-            .alongWith(new CmdSpinMotorPositive(1, launcherMotorA))
+            new CmdSpinMotorPositive(1, launcherMotorA)
             .alongWith(new CmdSpinMotorPositive(1, launcherMotorB)),
             new WaitCommand(0.1),
-            new CmdSpinMotorPositive(1.8, launcherFeeder),
+            new CmdSpinMotorPositive(1, launcherFeeder),
             new CmdSetMotorSpeed(launcherMotorA,0),
             new CmdSetMotorSpeed(launcherMotorB, 0),
 
             new SetPoseCmd(new Pose2d(
-                new Translation2d(1.43,5.5), new Rotation2d().fromDegrees(180)
-            ), swerveSys)
+                new Translation2d(1.34,5.52), new Rotation2d().fromDegrees(180)
+            ), swerveSys),
+            AutoBuilder.followPath(path),
+            new CmdSpinMotorPositive(2, launcherFeeder)
+            .alongWith(new CmdSpinMotorPositive(2,groundPickupMotor))
+            .alongWith(AutoBuilder.followPath(path2)),
+            
+            new CmdSpinMotorNegative(.2, launcherFeeder)
+            .alongWith(new CmdSpinMotorNegative(.2,groundPickupMotor))
+            .alongWith(AutoBuilder.followPath(path3)),
+
+            new CmdSpinMotorPositive(1, launcherMotorA)
+            .alongWith(new CmdSpinMotorPositive(1, launcherMotorB)),
+            new WaitCommand(0.1),
+            new CmdSpinMotorPositive(1, launcherFeeder),
+            new CmdSetMotorSpeed(launcherMotorA,0),
+            new CmdSetMotorSpeed(launcherMotorB, 0)
             //AutoBuilder.pathfindToPose(new Pose2d(2.9,7, new Rotation2d(0)),new PathConstraints(1,1,90,90))
             
             );
             
     }
-
-
-
 
 }

@@ -91,16 +91,23 @@ public class Constants {
          */
         public static final double maxTurnRateRadiansPerSec = 2.0 * Math.PI;
 
-        
-        public static final Rotation2d frontLeftModOffset = Rotation2d.fromDegrees((0.540283*360) -35 +180); 
-        public static final Rotation2d frontRightModOffset = Rotation2d.fromDegrees((0.391602*360) + 35.0);
-        public static final Rotation2d backRightModOffset = Rotation2d.fromDegrees((0.390869*360) +180 -112); 
-        public static final Rotation2d backLeftModOffset = Rotation2d.fromDegrees((0.834473*360) + 165);
+        public static final Rotation2d frontLeftModOffset = Rotation2d.fromDegrees(180 -20); 
+        public static final Rotation2d frontRightModOffset = Rotation2d.fromDegrees(180 -15);
+        public static final Rotation2d backRightModOffset = Rotation2d.fromDegrees(-80 -73); 
+        public static final Rotation2d backLeftModOffset = Rotation2d.fromDegrees(180 -75);
+
+
+
+
+        //public static final Rotation2d frontLeftModOffset = Rotation2d.fromDegrees((0.540283*360) -35 +180); 
+        //public static final Rotation2d frontRightModOffset = Rotation2d.fromDegrees((0.391602*360) + 35.0);
+        //public static final Rotation2d backRightModOffset = Rotation2d.fromDegrees((0.390869*360) +180 -112); 
+        //public static final Rotation2d backLeftModOffset = Rotation2d.fromDegrees((0.834473*360) + 165);
 
         public static final int driveCurrentLimitAmps = 35;
         
         public static final double drivekP = 0.005;
-        public static final double drivekD = 0.0;
+        public static final double drivekD = 0.1;
 
         public static final double steerkP = 0.37431;
         public static final double steerkD = 0.27186;
@@ -118,13 +125,13 @@ public class Constants {
          */
         public static final double maxVelMetersPerSec = 3.25;
 
-        public static final double drivekP = 1;
-        public static final double drivekD = 0;
+        public static final double drivekP = 1.2;
+        public static final double drivekD = 1;
 
         public static final PIDConstants driveConstants = new PIDConstants(drivekD, drivekD);
 
-        public static final double rotkP = 1;
-        public static final double rotkD = 0;
+        public static final double rotkP = 1.2;
+        public static final double rotkD = 1;
 
         public static final PIDConstants rotConstants = new PIDConstants(rotkP, rotkD);
     }

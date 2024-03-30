@@ -32,20 +32,39 @@ public class AutoBlueLeft extends SequentialCommandGroup{
 
     public AutoBlueLeft(SwerveSys swerveSys, VictorSPXMotorSubsystem launcherMotorA, VictorSPXMotorSubsystem launcherMotorB, VictorSPXMotorSubsystem liftGate, 
     VictorSPXMotorSubsystem groundPickupMotor, VictorSPXMotorSubsystem launcherFeeder){
-        //PathPlannerPath path = PathPlannerPath.fromPathFile("Short Path Forward");
-
+        PathPlannerPath path = PathPlannerPath.fromPathFile("Blue Left Path");
+        PathPlannerPath path2 = PathPlannerPath.fromPathFile("Blue Left Path 2");
+        PathPlannerPath path3 = PathPlannerPath.fromPathFile("Blue Left Path 3");
+        PathPlannerPath path4 = PathPlannerPath.fromPathFile("Blue Left Path 4");
         addCommands(
-            new CmdSpinMotorNegative(1.5, liftGate)
-            .alongWith(new CmdSpinMotorPositive(1, launcherMotorA))
-            .alongWith(new CmdSpinMotorPositive(1, launcherMotorB)),
+            new CmdSpinMotorPositive(.75, launcherMotorA)
+            .alongWith(new CmdSpinMotorPositive(.75, launcherMotorB)),
             new WaitCommand(0.1),
-            new CmdSpinMotorPositive(1.8, launcherFeeder),
+            new CmdSpinMotorPositive(.74, launcherFeeder),
             new CmdSetMotorSpeed(launcherMotorA,0),
             new CmdSetMotorSpeed(launcherMotorB, 0),
 
             new SetPoseCmd(new Pose2d(
-                new Translation2d(0.69,4.39), new Rotation2d().fromDegrees(117)
-            ), swerveSys)
+                new Translation2d(0.74,4.37), new Rotation2d().fromDegrees(120)
+            ), swerveSys),
+            AutoBuilder.followPath(path),
+
+            new CmdSpinMotorPositive(3, launcherFeeder)
+            .alongWith(new CmdSpinMotorPositive(3,groundPickupMotor))
+            .alongWith(AutoBuilder.followPath(path2)),
+
+            new CmdSpinMotorNegative(.35, launcherFeeder)
+            .alongWith(new CmdSpinMotorNegative(.35,groundPickupMotor))
+            .alongWith(AutoBuilder.followPath(path3)),
+
+            AutoBuilder.followPath(path4),
+
+            new CmdSpinMotorPositive(.75, launcherMotorA)
+            .alongWith(new CmdSpinMotorPositive(.75, launcherMotorB)),
+            new WaitCommand(0.1),
+            new CmdSpinMotorPositive(.74, launcherFeeder),
+            new CmdSetMotorSpeed(launcherMotorA,0),
+            new CmdSetMotorSpeed(launcherMotorB, 0)
             //AutoBuilder.pathfindToPose(new Pose2d(2.9,7, new Rotation2d(0)),new PathConstraints(1,1,90,90))
         );
             

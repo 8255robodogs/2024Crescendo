@@ -30,7 +30,7 @@ public class AutoRedMiddle extends SequentialCommandGroup{
 
     public AutoRedMiddle(SwerveSys swerveSys, VictorSPXMotorSubsystem launcherMotorA, VictorSPXMotorSubsystem launcherMotorB, VictorSPXMotorSubsystem liftGate, 
     VictorSPXMotorSubsystem groundPickupMotor, VictorSPXMotorSubsystem launcherFeeder){
-        //PathPlannerPath path = PathPlannerPath.fromPathFile("Short Path Forward");
+        PathPlannerPath path = PathPlannerPath.fromPathFile("Red Mid Path");
 
         addCommands(
             new CmdSpinMotorNegative(1.5, liftGate)
@@ -43,7 +43,8 @@ public class AutoRedMiddle extends SequentialCommandGroup{
 
             new SetPoseCmd(new Pose2d(
                 new Translation2d(15.14,5.57), new Rotation2d().fromDegrees(0)
-            ), swerveSys)
+            ), swerveSys),
+            AutoBuilder.followPath(path)
             //AutoBuilder.pathfindToPose(new Pose2d(2.9,7, new Rotation2d(0)),new PathConstraints(1,1,90,90))
             
             );

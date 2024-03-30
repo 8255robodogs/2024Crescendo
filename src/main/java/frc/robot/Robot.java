@@ -28,6 +28,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.auto.programs.*;
 import frc.robot.commands.drivetrain.ArcadeDriveCmd;
 import frc.robot.subsystems.ExampleSys;
+import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.SwerveSys;
 import frc.robot.subsystems.VictorSPXMotorSubsystem;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -69,6 +70,10 @@ public class Robot extends TimedRobot {
 
     VictorSPXMotorSubsystem lifterGate = new VictorSPXMotorSubsystem(7, "lifter gate", true);
 
+    //pneumatics subsystem
+    PneumaticSubsystem pneumatics = new PneumaticSubsystem(2,3,false);
+
+
     //The two little servos for the camera gimbal. They are plugged into the PMW ports on the RIO.
     Servo servoCameraTurn = new Servo(9);
     Servo servoCameraPitch = new Servo( 8);
@@ -100,7 +105,18 @@ public class Robot extends TimedRobot {
         //create command selector for the smart dashboard and add Autos to it.
         SmartDashboard.putData("auto selector", autoSelector);
         autoSelector.setDefaultOption("Do Nothing", null);
-        autoSelector.addOption("Example Auto 2", new ExampleAuto2(swerveSys, exampleSys));
+        autoSelector.addOption("Auto Shoot And Stay Still", new AutoShootAndStayStill(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
+        
+        autoSelector.addOption("Auto Red Left", new AutoRedLeft(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
+        autoSelector.addOption("Auto Red Mid", new AutoShootAndStayStill(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
+        autoSelector.addOption("Auto Red Right", new AutoRedRight(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
+
+        autoSelector.addOption("Auto Blue Left", new AutoBlueLeft(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
+        autoSelector.addOption("Auto Blue Mid", new AutoBlueMiddle(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
+        autoSelector.addOption("Auto Blue Right", new AutoBlueRight(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
+
+        
+
         //autoSelector.addOption("Example Auto", new TestAuto(swerveSys, launcherMotorA,launcherMotorB));
         //autoSelector.addOption("Test Auto", new TestAuto(swerveSys, launcherMotorA, launcherMotorB));    
 
@@ -124,8 +140,8 @@ public class Robot extends TimedRobot {
         //set motor speeds
         topMotor.setMaxSpeed(1.0);
 
-        launcherMotorA.setMaxSpeed(1.0);
-        launcherMotorB.setMaxSpeed(1.0);
+        launcherMotorA.setMaxSpeed(1); 
+        launcherMotorB.setMaxSpeed(1); 
         launcherMotorA.SetSpeedAccelerationRate(1);
         launcherMotorB.SetSpeedAccelerationRate(1);
         launcherMotorA.SetSpeedFallRate(0);
@@ -162,7 +178,9 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         swerveSys.resetPose();
-        autonomousCommand = new TestAuto(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
+        //autonomousCommand = new TestAuto(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
+        
+        //autonomousCommand = new AutoShootAndStayStill(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
         //autonomousCommand = new AutoBlueLeft(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
         //autonomousCommand = new AutoBlueMiddle(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
         //autonomousCommand = new AutoBlueRight(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
@@ -170,6 +188,12 @@ public class Robot extends TimedRobot {
         //autonomousCommand = new AutoRedMiddle(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
         //autonomousCommand = new AutoRedRight(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
         
+        if(autoSelector.getSelected() != null){
+            autonomousCommand = autoSelector.getSelected();
+        }else{
+            autonomousCommand = new AutoShootAndStayStill(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
+        }
+
         if(autonomousCommand != null) autonomousCommand.schedule(); //DONT TOUCH
     }
 
@@ -209,6 +233,11 @@ public class Robot extends TimedRobot {
         }else if(xbox1.getXButton() == true && xbox1.getBButton() == false){
             LauncherFeeder.SetSpeed(-.2);
             groundPickupMotor.SetSpeed(-0.2);
+            
+        }else if(xbox0.getRightBumper() == true && xbox0.getLeftBumper() == false){
+            LauncherFeeder.SetSpeed(1);
+            groundPickupMotor.SetSpeed(1);
+
         }else{
             LauncherFeeder.SetSpeed(0);
             groundPickupMotor.SetSpeed(0);
@@ -226,25 +255,32 @@ public class Robot extends TimedRobot {
             launcherMotorA.SetSpeed(-0.3);
             launcherMotorB.SetSpeed(-0.3);
 
+        }else if(xbox1.getRightBumper()){
+             launcherMotorA.SetSpeed(0.525); //.525 CHANGE FOR AMP SCORING
+             launcherMotorB.SetSpeed(.2);  //.2 CHANGE FOR AMP SCORING
+        }else if(xbox1.getLeftBumper()){
+             launcherMotorA.SetSpeed(-0.6);
+             launcherMotorB.SetSpeed(-.6);
+
         }else if (xbox1.getLeftTriggerAxis() < 0.3 && xbox1.getRightTriggerAxis() < 0.3){ 
             launcherMotorA.SetSpeed(0);
             launcherMotorB.SetSpeed(0);
         }
 
 
-        //topmotor
-        if(xbox1.getRightBumper()){
-             topMotor.SetSpeed(0.6);
-        }else if(xbox1.getLeftBumper()){
-             topMotor.SetSpeed(-0.6);
-        }else{
-            topMotor.SetSpeed(0);
+        
+    
+        //pneumatics
+        if (xbox1.getLeftStickButtonPressed()){
+            pneumatics.TogglePneumatic();
         }
-
-        //lifter gate
-        if(Math.abs(xbox1.getLeftY()) > 0.2){
-            lifterGate.ControlDirectly(xbox1.getLeftY() * 0.6);
-        }        
+        SmartDashboard.putNumber("xbox1hat", xbox1.getPOV());
+        if(xbox1.getPOV() == 0){
+            pneumatics.PneumaticReverse();
+        }
+        if(xbox1.getPOV() == 180){
+            pneumatics.PneumaticForward();
+        }
 
 
     }

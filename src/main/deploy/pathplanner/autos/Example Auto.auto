@@ -2,15 +2,22 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 15.847320415019981,
-      "y": 4.338087917881997
+      "x": 15.780013915919055,
+      "y": 6.841080348827365
     },
-    "rotation": 61.927513064147305
+    "rotation": -59.981632572529946
   },
   "command": {
     "type": "sequential",
     "data": {
-      "commands": []
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Right Path"
+          }
+        }
+      ]
     }
   },
   "folder": null,

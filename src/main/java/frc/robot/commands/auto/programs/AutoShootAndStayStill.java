@@ -25,23 +25,20 @@ import frc.robot.commands.drivetrain.SetTranslationCmd;
 import frc.robot.subsystems.SwerveSys;
 import frc.robot.subsystems.VictorSPXMotorSubsystem;
 
-public class AutoShootAndDriveBack extends SequentialCommandGroup{
+public class AutoShootAndStayStill extends SequentialCommandGroup{
 
-    public AutoShootAndDriveBack(SwerveSys swerveSys, VictorSPXMotorSubsystem launcherMotorA, VictorSPXMotorSubsystem launcherMotorB, VictorSPXMotorSubsystem liftGate, 
+    public AutoShootAndStayStill(SwerveSys swerveSys, VictorSPXMotorSubsystem launcherMotorA, VictorSPXMotorSubsystem launcherMotorB, VictorSPXMotorSubsystem liftGate, 
     VictorSPXMotorSubsystem groundPickupMotor, VictorSPXMotorSubsystem launcherFeeder){
-        //PathPlannerPath path = PathPlannerPath.fromPathFile("Short Path Forward");
+        
 
         addCommands(
             new CmdSpinMotorNegative(1.5, liftGate),
             new CmdSpinMotorPositive(1, launcherMotorA)
             .alongWith(new CmdSpinMotorPositive(1, launcherMotorB)),
-            new WaitCommand(2.5),
-            new CmdSpinMotorPositive(1.5, launcherFeeder),
+            new WaitCommand(0.5),
+            new CmdSpinMotorPositive(1.3, launcherFeeder),
             new CmdSetMotorSpeed(launcherMotorA,0),
-            new CmdSetMotorSpeed(launcherMotorB, 0),
-            new SetHeadingCmd(new Rotation2d(180), swerveSys),
-            new SetTranslationCmd(new Translation2d(0, 0), swerveSys),
-            AutoBuilder.pathfindToPose(new Pose2d(1,0, new Rotation2d(0)),new PathConstraints(1,1,90,90))
+            new CmdSetMotorSpeed(launcherMotorB, 0)
             
             );
             
