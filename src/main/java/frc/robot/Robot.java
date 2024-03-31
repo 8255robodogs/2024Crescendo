@@ -1,24 +1,15 @@
 package frc.robot;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import java.text.DecimalFormat;
-import java.util.Date;
-
-import javax.lang.model.util.ElementScanner14;
-
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.util.PixelFormat;
-import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.util.datalog.StringLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,18 +18,17 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.auto.programs.*;
 import frc.robot.commands.drivetrain.ArcadeDriveCmd;
-import frc.robot.subsystems.ExampleSys;
 import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.SwerveSys;
 import frc.robot.subsystems.VictorSPXMotorSubsystem;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.DoubleSolenoid.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.drivetrain.ArcadeDriveCmd;
 
 
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
     
     private RobotContainer robotContainer;
     private XboxController xbox0 = new XboxController(0);
@@ -46,13 +36,9 @@ public class Robot extends TimedRobot {
     
     private Command autonomousCommand;
     SendableChooser<Command> autoSelector = new SendableChooser<Command>();
-    
-
 
     //drivesystem
     private final SwerveSys swerveSys = new SwerveSys();
-    private final ExampleSys exampleSys = new ExampleSys();
-
 
     //This is the top motor, running on its own
     private VictorSPXMotorSubsystem topMotor = new VictorSPXMotorSubsystem(9, "TopMotor", true);
@@ -60,7 +46,6 @@ public class Robot extends TimedRobot {
     //These are the two motors that work together, they should be set very similarily
     private VictorSPXMotorSubsystem launcherMotorA = new VictorSPXMotorSubsystem(5, "LauncherMotorA", true);
     private VictorSPXMotorSubsystem launcherMotorB = new VictorSPXMotorSubsystem(6, "LauncherMotorB", true);
-
 
     //Ground pickup motor
     VictorSPXMotorSubsystem groundPickupMotor = new VictorSPXMotorSubsystem(3,"groundPickupMotor",true);
@@ -74,34 +59,33 @@ public class Robot extends TimedRobot {
     PneumaticSubsystem pneumatics = new PneumaticSubsystem(2,3,false);
 
 
-    //The two little servos for the camera gimbal. They are plugged into the PMW ports on the RIO.
-    Servo servoCameraTurn = new Servo(9);
-    Servo servoCameraPitch = new Servo( 8);
-    
-    DecimalFormat df = new DecimalFormat("###.###");
-
-    DoubleLogEntry xlog;
-    DoubleLogEntry ylog;
-    DoubleLogEntry headingLog;
-    DoubleArrayLogEntry poseLog;
-
-
     @Override
     public void robotInit() {
-        robotContainer = new RobotContainer(); //not using robotcontainer
-        
-        // Starts recording to data log
-        DataLogManager.start();
-        // Record both DS control and joystick data
-        DriverStation.startDataLog(DataLogManager.getLog());
-        DataLog log = DataLogManager.getLog();
-        
-        
-        xlog = new DoubleLogEntry(log, "/odometry/X");
-        ylog = new DoubleLogEntry(log, "/odometry/Y");
-        headingLog = new DoubleLogEntry(log, "/odometry/Heading");
-        poseLog = new DoubleArrayLogEntry(log,"odometry/pose");
+        Logger.recordMetadata("ProjectName", "2024Crescendo");
+        // Set up data receivers & replay source
+    switch (Constants.currentMode) {
+      case REAL:
+        // Running on a real robot, log to a USB stick ("/U/logs")
+        Logger.addDataReceiver(new WPILOGWriter());
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
 
+      case SIM:
+        // Running a physics simulator, log to NT
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+
+      case REPLAY:
+        // Replaying a log, set up replay source
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog();
+        Logger.setReplaySource(new WPILOGReader(logPath));
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+        break;
+    }
+        Logger.start();
+        
+        robotContainer = new RobotContainer(); //not using robotcontainer
         //create command selector for the smart dashboard and add Autos to it.
         SmartDashboard.putData("auto selector", autoSelector);
         autoSelector.setDefaultOption("Do Nothing", null);
@@ -115,16 +99,9 @@ public class Robot extends TimedRobot {
         autoSelector.addOption("Auto Blue Mid", new AutoBlueMiddle(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
         autoSelector.addOption("Auto Blue Right", new AutoBlueRight(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
 
-        
 
         //autoSelector.addOption("Example Auto", new TestAuto(swerveSys, launcherMotorA,launcherMotorB));
         //autoSelector.addOption("Test Auto", new TestAuto(swerveSys, launcherMotorA, launcherMotorB));    
-
-        //create the camera
-        //UsbCamera camera = CameraServer.startAutomaticCapture();
-        //camera.setVideoMode(PixelFormat.kMJPEG, 320, 240, 15);
-        
-
 
         //create the swerve drive
         swerveSys.setSpeedFactor(.9);
@@ -139,7 +116,6 @@ public class Robot extends TimedRobot {
 
         //set motor speeds
         topMotor.setMaxSpeed(1.0);
-
         launcherMotorA.setMaxSpeed(1); 
         launcherMotorB.setMaxSpeed(1); 
         launcherMotorA.SetSpeedAccelerationRate(1);
@@ -147,39 +123,31 @@ public class Robot extends TimedRobot {
         launcherMotorA.SetSpeedFallRate(0);
         launcherMotorB.SetSpeedFallRate(0);
 
-        servoCameraTurn.setAngle(90);
-        servoCameraPitch.setAngle(90);
-        servoCameraTurn.setPulseTimeMicroseconds(2500);
-        servoCameraPitch.setPulseTimeMicroseconds(2500);
-        
-        
-
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-        /*        
-        outputLimiter++;
-        if(outputLimiter > 120){
-            outputLimiter=0;
-            System.out.println("X: " + df.format(swerveSys.getPose().getX()) 
-            + "   Y: " + df.format(swerveSys.getPose().getY()) 
-            + "   Heading: " + swerveSys.getPose().getRotation().getDegrees());
-        }
-        */
-        xlog.append(swerveSys.getPose().getX());
-        ylog.append(swerveSys.getPose().getY());
-        headingLog.append(swerveSys.getPose().getRotation().getDegrees());
-        poseLog.append(new double[]{swerveSys.getPose().getX(), swerveSys.getPose().getY(),swerveSys.getPose().getRotation().getDegrees()});
         swerveSys.updateInterface();
     }
 
+
+    
     @Override
     public void autonomousInit() {
-        swerveSys.resetPose();
-        //autonomousCommand = new TestAuto(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
+        swerveSys.resetPose(); //I'm not certain this is necessary, each autonomous should be setting the swerve system's pose anyway.
         
+
+        //This block of code checks if the autonomous selector in Smart Dashboard has a routine selected.
+        if(autoSelector.getSelected() != null){
+            autonomousCommand = autoSelector.getSelected();
+        }else{
+            autonomousCommand = new AutoShootAndStayStill(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
+        }
+
+
+        //These are all commented out. If something is wrong with the auto selection, we can uncomment one of these to hard-code which auto should run.
+        //autonomousCommand = new TestAuto(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
         //autonomousCommand = new AutoShootAndStayStill(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
         //autonomousCommand = new AutoBlueLeft(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
         //autonomousCommand = new AutoBlueMiddle(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
@@ -188,13 +156,9 @@ public class Robot extends TimedRobot {
         //autonomousCommand = new AutoRedMiddle(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
         //autonomousCommand = new AutoRedRight(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
         
-        if(autoSelector.getSelected() != null){
-            autonomousCommand = autoSelector.getSelected();
-        }else{
-            autonomousCommand = new AutoShootAndStayStill(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder);
-        }
+        
 
-        if(autonomousCommand != null) autonomousCommand.schedule(); //DONT TOUCH
+        if(autonomousCommand != null) autonomousCommand.schedule(); //DONT TOUCH. This is what actually schedules the auto command which was selected.
     }
 
     @Override
@@ -268,8 +232,6 @@ public class Robot extends TimedRobot {
         }
 
 
-        
-    
         //pneumatics
         if (xbox1.getLeftStickButtonPressed()){
             pneumatics.TogglePneumatic();
