@@ -485,9 +485,6 @@ public class SwerveSys extends SubsystemBase {
         SmartDashboard.putNumber("BL offset CANCoder degrees", this.getCanCoderAngles()[2].getDegrees() - DriveConstants.backLeftModOffset.getDegrees());
         SmartDashboard.putNumber("BR offset CANCoder degrees", this.getCanCoderAngles()[3].getDegrees() - DriveConstants.backRightModOffset.getDegrees());
 
-        
-        
-
 
     }
 }

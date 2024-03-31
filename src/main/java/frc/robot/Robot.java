@@ -41,7 +41,6 @@ public class Robot extends LoggedRobot {
     private final SwerveSys swerveSys = new SwerveSys();
 
     //This is the top motor, running on its own
-    private VictorSPXMotorSubsystem topMotor = new VictorSPXMotorSubsystem(9, "TopMotor", true);
     
     //These are the two motors that work together, they should be set very similarily
     private VictorSPXMotorSubsystem launcherMotorA = new VictorSPXMotorSubsystem(5, "LauncherMotorA", true);
@@ -56,7 +55,7 @@ public class Robot extends LoggedRobot {
     VictorSPXMotorSubsystem lifterGate = new VictorSPXMotorSubsystem(7, "lifter gate", true);
 
     //pneumatics subsystem
-    PneumaticSubsystem pneumatics = new PneumaticSubsystem(2,3,false);
+    PneumaticSubsystem pneumatics = new PneumaticSubsystem(2,3);
 
 
     @Override
@@ -115,7 +114,6 @@ public class Robot extends LoggedRobot {
         ));
 
         //set motor speeds
-        topMotor.setMaxSpeed(1.0);
         launcherMotorA.setMaxSpeed(1); 
         launcherMotorB.setMaxSpeed(1); 
         launcherMotorA.SetSpeedAccelerationRate(1);
