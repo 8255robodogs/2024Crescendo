@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.auto.programs.*;
 import frc.robot.commands.drivetrain.ArcadeDriveCmd;
+import frc.robot.subsystems.PIDTestSystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.SwerveSys;
 import frc.robot.subsystems.VictorSPXMotorSubsystem;
@@ -57,6 +58,8 @@ public class Robot extends LoggedRobot {
     //pneumatics subsystem
     PneumaticSubsystem pneumatics = new PneumaticSubsystem(2,3);
 
+    //test subsystem, not actual hardware, just a test
+    PIDTestSystem pidTest = new PIDTestSystem();
 
     @Override
     public void robotInit() {
@@ -240,6 +243,14 @@ public class Robot extends LoggedRobot {
         }
         if(xbox1.getPOV() == 180){
             pneumatics.PneumaticForward();
+        }
+
+        if(xbox0.getPOV() == 270){
+            pidTest.targetValue-= 5;
+        }
+        if(xbox0.getPOV() == 90){
+            pidTest.targetValue+= 5;
+
         }
 
 
