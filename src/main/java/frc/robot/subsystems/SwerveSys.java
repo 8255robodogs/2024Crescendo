@@ -469,6 +469,7 @@ public class SwerveSys extends SubsystemBase {
         SmartDashboard.putNumber("speed m/s", getAverageDriveVelocityMetersPerSec());
         SmartDashboard.putNumber("X Pos", getPose().getX());
         SmartDashboard.putNumber("Y Pos", getPose().getY());
+        SmartDashboard.putBoolean("isFieldOriented", isFieldOriented);
 
         SmartDashboard.putNumber("FL angle degrees", getModuleStates()[0].angle.getDegrees());
         SmartDashboard.putNumber("FR angle degrees", getModuleStates()[1].angle.getDegrees());

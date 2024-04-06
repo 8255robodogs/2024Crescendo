@@ -73,13 +73,6 @@ public class Robot extends TimedRobot {
     //pneumatics subsystem
     PneumaticSubsystem pneumatics = new PneumaticSubsystem(2,3,false);
 
-
-    //The two little servos for the camera gimbal. They are plugged into the PMW ports on the RIO.
-    Servo servoCameraTurn = new Servo(9);
-    Servo servoCameraPitch = new Servo( 8);
-    
-    DecimalFormat df = new DecimalFormat("###.###");
-
     DoubleLogEntry xlog;
     DoubleLogEntry ylog;
     DoubleLogEntry headingLog;
@@ -95,8 +88,8 @@ public class Robot extends TimedRobot {
         // Record both DS control and joystick data
         DriverStation.startDataLog(DataLogManager.getLog());
         DataLog log = DataLogManager.getLog();
-        
-        
+
+        //create log entries to save data to
         xlog = new DoubleLogEntry(log, "/odometry/X");
         ylog = new DoubleLogEntry(log, "/odometry/Y");
         headingLog = new DoubleLogEntry(log, "/odometry/Heading");
@@ -121,13 +114,13 @@ public class Robot extends TimedRobot {
         //autoSelector.addOption("Test Auto", new TestAuto(swerveSys, launcherMotorA, launcherMotorB));    
 
         //create the camera
-        //UsbCamera camera = CameraServer.startAutomaticCapture();
-        //camera.setVideoMode(PixelFormat.kMJPEG, 320, 240, 15);
+        UsbCamera camera = CameraServer.startAutomaticCapture();
+        camera.setVideoMode(PixelFormat.kMJPEG, 320, 240, 15);
         
 
 
         //create the swerve drive
-        swerveSys.setSpeedFactor(.9);
+        swerveSys.setSpeedFactor(1);
         swerveSys.setDefaultCommand(new ArcadeDriveCmd(
             () -> MathUtil.applyDeadband(xbox0.getLeftY(), ControllerConstants.joystickDeadband),
             () -> MathUtil.applyDeadband(xbox0.getLeftX(), ControllerConstants.joystickDeadband),
@@ -137,8 +130,7 @@ public class Robot extends TimedRobot {
             swerveSys
         ));
 
-        //set motor speeds
-        topMotor.setMaxSpeed(1.0);
+        
 
         launcherMotorA.setMaxSpeed(1); 
         launcherMotorB.setMaxSpeed(1); 
@@ -147,10 +139,6 @@ public class Robot extends TimedRobot {
         launcherMotorA.SetSpeedFallRate(0);
         launcherMotorB.SetSpeedFallRate(0);
 
-        servoCameraTurn.setAngle(90);
-        servoCameraPitch.setAngle(90);
-        servoCameraTurn.setPulseTimeMicroseconds(2500);
-        servoCameraPitch.setPulseTimeMicroseconds(2500);
         
         
 
@@ -159,19 +147,15 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-        /*        
-        outputLimiter++;
-        if(outputLimiter > 120){
-            outputLimiter=0;
-            System.out.println("X: " + df.format(swerveSys.getPose().getX()) 
-            + "   Y: " + df.format(swerveSys.getPose().getY()) 
-            + "   Heading: " + swerveSys.getPose().getRotation().getDegrees());
-        }
-        */
+        
+
+        //writing data to the log
         xlog.append(swerveSys.getPose().getX());
         ylog.append(swerveSys.getPose().getY());
         headingLog.append(swerveSys.getPose().getRotation().getDegrees());
         poseLog.append(new double[]{swerveSys.getPose().getX(), swerveSys.getPose().getY(),swerveSys.getPose().getRotation().getDegrees()});
+        
+        //writing data to shuffleboard
         swerveSys.updateInterface();
     }
 
@@ -256,8 +240,8 @@ public class Robot extends TimedRobot {
             launcherMotorB.SetSpeed(-0.3);
 
         }else if(xbox1.getRightBumper()){
-             launcherMotorA.SetSpeed(0.525); //.525 CHANGE FOR AMP SCORING
-             launcherMotorB.SetSpeed(.2);  //.2 CHANGE FOR AMP SCORING
+             launcherMotorA.SetSpeed(.5); //.525 CHANGE FOR AMP SCORING
+             launcherMotorB.SetSpeed(0);  //.2 CHANGE FOR AMP SCORING
         }else if(xbox1.getLeftBumper()){
              launcherMotorA.SetSpeed(-0.6);
              launcherMotorB.SetSpeed(-.6);
@@ -274,7 +258,7 @@ public class Robot extends TimedRobot {
         if (xbox1.getLeftStickButtonPressed()){
             pneumatics.TogglePneumatic();
         }
-        SmartDashboard.putNumber("xbox1hat", xbox1.getPOV());
+        
         if(xbox1.getPOV() == 0){
             pneumatics.PneumaticReverse();
         }
