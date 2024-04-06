@@ -104,9 +104,9 @@ public class Robot extends TimedRobot {
         autoSelector.addOption("Auto Red Mid", new AutoShootAndStayStill(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
         autoSelector.addOption("Auto Red Right", new AutoRedRight(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
 
-        autoSelector.addOption("Auto Blue Left", new AutoBlueLeft(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
+        autoSelector.addOption("Auto Blue Left (source side)", new AutoBlueLeft(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
         autoSelector.addOption("Auto Blue Mid", new AutoBlueMiddle(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
-        autoSelector.addOption("Auto Blue Right", new AutoBlueRight(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
+        autoSelector.addOption("Auto Blue Right (amp side)", new AutoBlueRight(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
 
         
 
@@ -208,6 +208,17 @@ public class Robot extends TimedRobot {
             swerveSys.lock();
         }
 
+        //hold RB to make the robot drive like a first person video game, instead of field relative.
+        //This is useful for driving while looking at the onboard camera
+        if(xbox0.getRightBumper() == true){
+            swerveSys.setIsFieldOriented(true);
+            swerveSys.setSpeedFactor(0.7);
+        }else{
+            swerveSys.setIsFieldOriented(false);
+            swerveSys.setSpeedFactor(1);
+        }
+
+
         //Operator Controller (xbox1)
 
         //Launcher Feeder
@@ -216,17 +227,8 @@ public class Robot extends TimedRobot {
             groundPickupMotor.SetSpeed(1);
         }else if(xbox1.getXButton() == true && xbox1.getBButton() == false){
             LauncherFeeder.SetSpeed(-.2);
-            groundPickupMotor.SetSpeed(-0.2);
-            
-        }else if(xbox0.getRightBumper() == true && xbox0.getLeftBumper() == false){
-            LauncherFeeder.SetSpeed(1);
-            groundPickupMotor.SetSpeed(1);
-
-        }else{
-            LauncherFeeder.SetSpeed(0);
-            groundPickupMotor.SetSpeed(0);
+            groundPickupMotor.SetSpeed(-0.2);    
         }
-
 
         //Launchers
         if(xbox1.getRightTriggerAxis() > 0.3 && xbox1.getLeftTriggerAxis() < 0.3){
@@ -247,6 +249,7 @@ public class Robot extends TimedRobot {
              launcherMotorB.SetSpeed(-.6);
 
         }else if (xbox1.getLeftTriggerAxis() < 0.3 && xbox1.getRightTriggerAxis() < 0.3){ 
+            //neither triggers are pulled, stop the motors
             launcherMotorA.SetSpeed(0);
             launcherMotorB.SetSpeed(0);
         }

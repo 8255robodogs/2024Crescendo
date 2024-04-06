@@ -34,7 +34,12 @@ public class AutoBlueRight extends SequentialCommandGroup{
         PathPlannerPath path2 = PathPlannerPath.fromPathFile("Blue Right Path 2");
         PathPlannerPath path3 = PathPlannerPath.fromPathFile("Blue Right Path 3");
         PathPlannerPath path4 = PathPlannerPath.fromPathFile("Blue Right Path 4");
+        PathPlannerPath path5 = PathPlannerPath.fromPathFile("Blue Right Path 5");
+        PathPlannerPath path6 = PathPlannerPath.fromPathFile("Blue Right Path 6");
+        
+
         addCommands(
+            //shoot first note
             new CmdSpinMotorPositive(.75, launcherMotorA)
             .alongWith(new CmdSpinMotorPositive(1, launcherMotorB)),
             new WaitCommand(0.1),
@@ -42,19 +47,20 @@ public class AutoBlueRight extends SequentialCommandGroup{
             new CmdSetMotorSpeed(launcherMotorA,0),
             new CmdSetMotorSpeed(launcherMotorB, 0),
 
-            new SetPoseCmd(new Pose2d(
-                new Translation2d(0.77,6.69), new Rotation2d().fromDegrees(-120)
-            ), swerveSys),
+            //approach second note
             AutoBuilder.followPath(path),
 
+            //pick up second note
             new CmdSpinMotorPositive(1.5, launcherFeeder)
             .alongWith(new CmdSpinMotorPositive(1.5,groundPickupMotor))
             .alongWith(AutoBuilder.followPath(path2)),
 
+            //backup second note and approach speaker
             new CmdSpinMotorNegative(.35, launcherFeeder)
             .alongWith(new CmdSpinMotorNegative(.35,groundPickupMotor))
             .alongWith(AutoBuilder.followPath(path3)),
 
+            //shoot second note
             new CmdSpinMotorPositive(.75, launcherMotorA)
             .alongWith(new CmdSpinMotorPositive(1, launcherMotorB)),
             new WaitCommand(0.1),
@@ -62,7 +68,26 @@ public class AutoBlueRight extends SequentialCommandGroup{
             new CmdSetMotorSpeed(launcherMotorA,0),
             new CmdSetMotorSpeed(launcherMotorB, 0),
 
-            AutoBuilder.followPath(path4)
+            //drive to third note
+            AutoBuilder.followPath(path4),
+
+            //pick up third note
+            new CmdSpinMotorPositive(1.5, launcherFeeder)
+            .alongWith(new CmdSpinMotorPositive(1.5,groundPickupMotor))
+            .alongWith(AutoBuilder.followPath(path5)),
+
+            //backup third note and approach speaker
+            new CmdSpinMotorNegative(.35, launcherFeeder)
+            .alongWith(new CmdSpinMotorNegative(.35,groundPickupMotor))
+            .alongWith(AutoBuilder.followPath(path6)),
+
+            //shoot third note
+            new CmdSpinMotorPositive(.75, launcherMotorA)
+            .alongWith(new CmdSpinMotorPositive(1, launcherMotorB)),
+            new WaitCommand(0.1),
+            new CmdSpinMotorPositive(.74, launcherFeeder),
+            new CmdSetMotorSpeed(launcherMotorA,0),
+            new CmdSetMotorSpeed(launcherMotorB, 0)
             //AutoBuilder.pathfindToPose(new Pose2d(2.9,7, new Rotation2d(0)),new PathConstraints(1,1,90,90))
             
             );

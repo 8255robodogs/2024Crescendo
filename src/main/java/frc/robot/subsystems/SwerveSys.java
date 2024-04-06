@@ -68,6 +68,9 @@ public class SwerveSys extends SubsystemBase {
     public boolean isFieldOriented() {
         return isFieldOriented;
     }
+    public void setIsFieldOriented(boolean bool){
+        this.isFieldOriented=bool;
+    }
 
     private double speedFactor = 1.0;
     public double getSpeedFactor() {
@@ -123,7 +126,7 @@ public class SwerveSys extends SubsystemBase {
       new HolonomicPathFollowerConfig(
       AutoConstants.driveConstants, // Translation constants 
       AutoConstants.rotConstants, // Rotation constants 
-      1, 
+      1.5, 
       Units.inchesToMeters(16.97), // Drive base radius (distance from center to furthest module) 
       new ReplanningConfig()
     ),
