@@ -59,7 +59,7 @@ public class AutoBlueLeft extends SequentialCommandGroup{
             //back up second note and drive close to speaker
             new CmdSpinMotorNegative(.35, launcherFeeder)
             .alongWith(new CmdSpinMotorNegative(.35,groundPickupMotor))
-            .alongWith(AutoBuilder.followPath(path3),
+            .alongWith(AutoBuilder.followPath(path3)),
 
             //drive right up to speaker
             AutoBuilder.followPath(path4),
@@ -71,7 +71,7 @@ public class AutoBlueLeft extends SequentialCommandGroup{
             new CmdSpinMotorPositive(.74, launcherFeeder),
             new CmdSetMotorSpeed(launcherMotorA,0),
             new CmdSetMotorSpeed(launcherMotorB, 0),
-
+             
             //approach third note
             AutoBuilder.followPath(path5),
 
@@ -83,7 +83,7 @@ public class AutoBlueLeft extends SequentialCommandGroup{
             //back up third note and drive close to speaker
             new CmdSpinMotorNegative(.35, launcherFeeder)
             .alongWith(new CmdSpinMotorNegative(.35,groundPickupMotor))
-            .alongWith(AutoBuilder.followPath(path3),
+            .alongWith(AutoBuilder.followPath(path3)),
 
             //drive right up to speaker
             AutoBuilder.followPath(path4),
@@ -97,7 +97,7 @@ public class AutoBlueLeft extends SequentialCommandGroup{
             new CmdSetMotorSpeed(launcherMotorB, 0)
             
             //AutoBuilder.pathfindToPose(new Pose2d(2.9,7, new Rotation2d(0)),new PathConstraints(1,1,90,90))
-        )));
+        );
             
     }
 

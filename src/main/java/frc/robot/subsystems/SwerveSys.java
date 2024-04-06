@@ -126,7 +126,7 @@ public class SwerveSys extends SubsystemBase {
       new HolonomicPathFollowerConfig(
       AutoConstants.driveConstants, // Translation constants 
       AutoConstants.rotConstants, // Rotation constants 
-      1.5, 
+      1, 
       Units.inchesToMeters(16.97), // Drive base radius (distance from center to furthest module) 
       new ReplanningConfig()
     ),

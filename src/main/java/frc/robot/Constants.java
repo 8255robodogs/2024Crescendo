@@ -81,10 +81,10 @@ public class Constants {
 
         public static final double kFreeMetersPerSecond = 5600 * driveMetersPerSecPerRPM;
 
-        public static final double steerMtrMaxSpeedRadPerSec = 4.0;
-        public static final double steerMtrMaxAccelRadPerSecSq = 2.0;
+        public static final double steerMtrMaxSpeedRadPerSec = 2.0;
+        public static final double steerMtrMaxAccelRadPerSecSq = 1.0;
 
-        public static final double maxDriveSpeedMetersPerSec = 8.0;
+        public static final double maxDriveSpeedMetersPerSec = 5.0;
 
         /**
          * The rate the robot will spin with full Rot command.
@@ -106,7 +106,7 @@ public class Constants {
 
         public static final int driveCurrentLimitAmps = 35;
         
-        public static final double drivekP = 0.007;
+        public static final double drivekP = 0.005;
         public static final double drivekD = 0.1;
 
         public static final double steerkP = 0.37431;
@@ -123,15 +123,15 @@ public class Constants {
         /**
          * The default maximum speed of the robot in auto. Can be overridden by the FollowTrajectoryCmd Command.
          */
-        public static final double maxVelMetersPerSec = 4;
+        public static final double maxVelMetersPerSec = 3.25;
 
         public static final double drivekP = 1.2;
-        public static final double drivekD = .5;
+        public static final double drivekD = 1;
 
         public static final PIDConstants driveConstants = new PIDConstants(drivekD, drivekD);
 
         public static final double rotkP = 1.2;
-        public static final double rotkD = .5;
+        public static final double rotkD = 1;
 
         public static final PIDConstants rotConstants = new PIDConstants(rotkP, rotkD);
     }

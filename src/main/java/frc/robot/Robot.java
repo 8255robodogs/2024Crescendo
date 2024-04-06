@@ -210,6 +210,8 @@ public class Robot extends TimedRobot {
 
         //hold RB to make the robot drive like a first person video game, instead of field relative.
         //This is useful for driving while looking at the onboard camera
+        //NOT CURRENTLY WORKING, commenting out for now
+        /*
         if(xbox0.getRightBumper() == true){
             swerveSys.setIsFieldOriented(true);
             swerveSys.setSpeedFactor(0.7);
@@ -217,6 +219,7 @@ public class Robot extends TimedRobot {
             swerveSys.setIsFieldOriented(false);
             swerveSys.setSpeedFactor(1);
         }
+        */
 
 
         //Operator Controller (xbox1)
