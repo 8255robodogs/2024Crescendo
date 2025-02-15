@@ -1,6 +1,9 @@
 package frc.robot;
 
 
+
+import edu.wpi.first.wpilibj.util.Color;
+
 import java.text.DecimalFormat;
 import java.util.Date;
 
@@ -28,6 +31,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.auto.programs.*;
 import frc.robot.commands.drivetrain.ArcadeDriveCmd;
 import frc.robot.subsystems.ExampleSys;
+import frc.robot.subsystems.LEDPanelSys;
 import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.SwerveSys;
 import frc.robot.subsystems.VictorSPXMotorSubsystem;
@@ -78,6 +82,8 @@ public class Robot extends TimedRobot {
     DoubleLogEntry headingLog;
     DoubleArrayLogEntry poseLog;
 
+    //led panel
+    //LEDPanelSys led = new LEDPanelSys(0);
 
     @Override
     public void robotInit() {
@@ -103,11 +109,15 @@ public class Robot extends TimedRobot {
         autoSelector.addOption("Auto Red Left", new AutoRedLeft(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
         autoSelector.addOption("Auto Red Mid", new AutoShootAndStayStill(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
         autoSelector.addOption("Auto Red Right", new AutoRedRight(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
+        autoSelector.addOption("Auto Red Left shoot n WAIT", new AutoRedLeftWait(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
+        
+
 
         autoSelector.addOption("Auto Blue Left (source side)", new AutoBlueLeft(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
         autoSelector.addOption("Auto Blue Mid", new AutoBlueMiddle(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
         autoSelector.addOption("Auto Blue Right (amp side)", new AutoBlueRight(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
-
+        autoSelector.addOption("Auto Blue Right shoot n WAIT", new AutoBlueRightWait(swerveSys, launcherMotorA,launcherMotorB,lifterGate,groundPickupMotor,LauncherFeeder));
+        
         
 
         //autoSelector.addOption("Example Auto", new TestAuto(swerveSys, launcherMotorA,launcherMotorB));
@@ -117,7 +127,8 @@ public class Robot extends TimedRobot {
         UsbCamera camera = CameraServer.startAutomaticCapture();
         camera.setVideoMode(PixelFormat.kMJPEG, 320, 240, 15);
         
-
+        //SET LED PANEL COLOR
+        //led.setAllToColor(Color.kBlue);
 
         //create the swerve drive
         swerveSys.setSpeedFactor(1);
@@ -189,9 +200,12 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         
+        //led.setAllToColor(Color.kRed);
         if(autonomousCommand != null) autonomousCommand.cancel();
         
     }
+
+    
 
     @Override
     public void teleopPeriodic(){
@@ -208,18 +222,12 @@ public class Robot extends TimedRobot {
             swerveSys.lock();
         }
 
-        //hold RB to make the robot drive like a first person video game, instead of field relative.
-        //This is useful for driving while looking at the onboard camera
-        //NOT CURRENTLY WORKING, commenting out for now
-        /*
+        
         if(xbox0.getRightBumper() == true){
-            swerveSys.setIsFieldOriented(true);
-            swerveSys.setSpeedFactor(0.7);
-        }else{
-            swerveSys.setIsFieldOriented(false);
-            swerveSys.setSpeedFactor(1);
+            LauncherFeeder.SetSpeed(1);
+            groundPickupMotor.SetSpeed(1);
         }
-        */
+        
 
 
         //Operator Controller (xbox1)

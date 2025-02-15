@@ -52,20 +52,20 @@ public class AutoRedRight extends SequentialCommandGroup{
 
             new CmdSpinMotorPositive(3, launcherFeeder)
             .alongWith(new CmdSpinMotorPositive(3,groundPickupMotor))
-            .alongWith(AutoBuilder.followPath(path2)),
+            .alongWith(AutoBuilder.followPath(path2))
 
-            new CmdSpinMotorNegative(.35, launcherFeeder)
-            .alongWith(new CmdSpinMotorNegative(.35,groundPickupMotor))
-            .alongWith(AutoBuilder.followPath(path3)),
+            //new CmdSpinMotorNegative(.35, launcherFeeder)
+            //.alongWith(new CmdSpinMotorNegative(.35,groundPickupMotor))
+            //.alongWith(AutoBuilder.followPath(path3)),
 
-            AutoBuilder.followPath(path4),
+            //AutoBuilder.followPath(path4),
 
-            new CmdSpinMotorPositive(.75, launcherMotorA)
-            .alongWith(new CmdSpinMotorPositive(.75, launcherMotorB)),
-            new WaitCommand(0.1),
-            new CmdSpinMotorPositive(.74, launcherFeeder),
-            new CmdSetMotorSpeed(launcherMotorA,0),
-            new CmdSetMotorSpeed(launcherMotorB, 0)
+            //new CmdSpinMotorPositive(.75, launcherMotorA)
+            //.alongWith(new CmdSpinMotorPositive(.75, launcherMotorB)),
+            //new WaitCommand(0.1),
+            //new CmdSpinMotorPositive(.74, launcherFeeder),
+            //new CmdSetMotorSpeed(launcherMotorA,0),
+            //new CmdSetMotorSpeed(launcherMotorB, 0)
             //AutoBuilder.pathfindToPose(new Pose2d(2.9,7, new Rotation2d(0)),new PathConstraints(1,1,90,90))
         );
             

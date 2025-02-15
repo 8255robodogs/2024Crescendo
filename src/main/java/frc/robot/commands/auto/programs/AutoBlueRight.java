@@ -39,6 +39,7 @@ public class AutoBlueRight extends SequentialCommandGroup{
         
 
         addCommands(
+            new WaitCommand(.5),
             //shoot first note
             new CmdSpinMotorPositive(.75, launcherMotorA)
             .alongWith(new CmdSpinMotorPositive(1, launcherMotorB)),
@@ -47,7 +48,13 @@ public class AutoBlueRight extends SequentialCommandGroup{
             new CmdSetMotorSpeed(launcherMotorA,0),
             new CmdSetMotorSpeed(launcherMotorB, 0),
 
+
+            
+
             //approach second note
+            new SetPoseCmd(new Pose2d(
+            new Translation2d(0.77,6.69), new Rotation2d().fromDegrees(-120)
+            ), swerveSys),
             AutoBuilder.followPath(path),
 
             //pick up second note

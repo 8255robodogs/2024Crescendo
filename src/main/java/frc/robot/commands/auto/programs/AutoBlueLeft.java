@@ -40,6 +40,7 @@ public class AutoBlueLeft extends SequentialCommandGroup{
         PathPlannerPath path6 = PathPlannerPath.fromPathFile("Blue Left Path 6");
 
         addCommands(
+            new WaitCommand(1),
             //shoot first note
             new CmdSpinMotorPositive(.75, launcherMotorA)
             .alongWith(new CmdSpinMotorPositive(.75, launcherMotorB)),
@@ -49,12 +50,18 @@ public class AutoBlueLeft extends SequentialCommandGroup{
             new CmdSetMotorSpeed(launcherMotorB, 0),
 
             //approach second note
+            new SetPoseCmd(new Pose2d(
+            new Translation2d(0.74,4.37), new Rotation2d().fromDegrees(120)
+            ), swerveSys),
             AutoBuilder.followPath(path),
 
             //pickup second note
             new CmdSpinMotorPositive(.1, launcherFeeder)
             .alongWith(new CmdSpinMotorPositive(.1,groundPickupMotor))
             .alongWith(AutoBuilder.followPath(path2)),
+
+            //basically stop here
+            new WaitCommand(15),
 
             //back up second note and drive close to speaker
             new CmdSpinMotorNegative(.35, launcherFeeder)
